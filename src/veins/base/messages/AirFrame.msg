@@ -1,12 +1,16 @@
 cplusplus {{
+#include <memory>
 #include "veins/base/toolbox/Signal.h"
 #include "veins/base/utils/POA.h"
+
+typedef std::shared_ptr<cObject> cObjectPtr;
 }}
 
 namespace Veins;
 
 class noncobject Signal;
 class noncobject POA;
+class noncobject cObjectPtr;
 
 //
 // Format of the packets that are sent to the channel
@@ -31,6 +35,8 @@ class noncobject POA;
 packet AirFrame
 {
     Signal signal;        // Contains the physical data of this AirFrame
+
+    cObjectPtr metadata;  // Contains all required transmission metadata of this AirFrame
 
     POA poa;            // contains a POA object with the position, orientation and antenna (pointer)
                             // of the sender
