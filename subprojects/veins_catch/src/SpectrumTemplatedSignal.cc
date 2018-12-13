@@ -21,6 +21,8 @@
 #include "catch/catch.hpp"
 
 #include "veins/base/toolbox/STSignal.h"
+#include "veins/modules/phy/Spectrum80211.h"
+#include "veins/modules/analogueModel/SimplePathloss.h"
 #include "testutils/Simulation.h"
 
 using namespace Veins;
@@ -285,6 +287,59 @@ SCENARIO("Comparing ST Signals against powerlevel thresholds", "[STSignals]")
                 REQUIRE(signalBelowPowerlevelAtChannel<SignalType, passiveChannel>(sig, scalar));
                 REQUIRE(signalBelowPowerlevelAtFrequency<SignalType, activeFreq>(sig, scalar));
                 REQUIRE(signalBelowPowerlevelAtFrequency<SignalType, otherActiveFreq>(sig, scalar));
+            }
+        }
+    }
+}
+
+SCENARIO("Template SimplePathloss with alpha = 2", "[analogueModel]")
+{
+    DummySimulation ds(new cNullEnvir(0, nullptr, nullptr));
+    using Spectrum = Spectrum80211;
+    using Signal = STSignal<Spectrum>;
+    AnalogueModels::SimplePathloss<Signal> spm(2.0);
+
+    GIVEN("A signal in the 80211-Spectrum sent from (0, 0) with powerlevel 1")
+    {
+        STSignal<Spectrum> s(0, 0, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+        const Coord senderPos(0, 0, 2);
+        WHEN("the receiver is at (2, 0)")
+        {
+            const Coord receiverPos(2, 0, 2);
+            THEN("SimplePathlossModel drops power from 1 to 4.0874e-6 at 5.9 GHz")
+            {
+                spm.filterSignal(s, senderPos, receiverPos);
+                REQUIRE(s.at<Spectrum::CH180>() == Approx(4.0874e-6).epsilon(0.001));
+            }
+        }
+
+        WHEN("the receiver is at (5, 0)")
+        {
+            const Coord receiverPos(5, 0, 2);
+            THEN("SimplePathlossModel drops power from 1 to 6.539e-7")
+            {
+                spm.filterSignal(s, senderPos, receiverPos);
+                REQUIRE(s.at<Spectrum::CH180>()  == Approx(6.539e-7).epsilon(0.001));
+            }
+        }
+
+        WHEN("the receiver is at (10, 0)")
+        {
+            const Coord receiverPos(10, 0, 2);
+            THEN("SimplePathlossModel drops power from 1 to 1.634e-7")
+            {
+                spm.filterSignal(s, senderPos, receiverPos);
+                REQUIRE(s.at<Spectrum::CH180>()  == Approx(1.634e-7).epsilon(0.001));
+            }
+        }
+
+        WHEN("the receiver is at (100, 0)")
+        {
+            const Coord receiverPos(100, 0, 2);
+            THEN("SimplePathlossModel drops power from 1 to 1.634e-9")
+            {
+                spm.filterSignal(s, senderPos, receiverPos);
+                REQUIRE(s.at<Spectrum::CH180>() == Approx(1.634e-9).epsilon(0.001));
             }
         }
     }
