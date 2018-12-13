@@ -1,0 +1,15 @@
+LDFLAGS += -pthread
+
+all: veins_nonius$(D)
+
+veins_nonius$(D): $(O)/veins_nonius$(D)
+	$(qecho) "Creating symlink: $@"
+	$(Q)$(LN) $(O)/veins_nonius$(D) .
+
+$(O)/veins_nonius$(D): $(OBJS) $(O)/$(TARGET)
+	$(qecho) "Creating binary: $@"
+	$(Q)$(CXX) -o $@ $(OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) -L$(O)
+
+cleanbin:
+	$(Q)-rm -f $(O)/veins_nonius$(D)
+	$(Q)-rm -f veins_nonius$(D)
