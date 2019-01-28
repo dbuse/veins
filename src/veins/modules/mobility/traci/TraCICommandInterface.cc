@@ -660,7 +660,7 @@ void TraCICommandInterface::Polygon::setLineWidth(double lineWidth)
     ASSERT(buf.eof());
 }
 
-void TraCICommandInterface::addPolygon(std::string polyId, std::string polyType, const TraCIColor& color, bool filled, int32_t layer, const std::list<Coord>& points)
+void TraCICommandInterface::addPolygon(std::string polyId, std::string polyType, const TraCIColor& color, bool filled, int32_t layer, const std::list<Coord>& points, double lineWidth)
 {
     TraCIBuffer p;
 
@@ -678,6 +678,10 @@ void TraCICommandInterface::addPolygon(std::string polyId, std::string polyType,
 
     TraCIBuffer buf = connection.query(CMD_SET_POLYGON_VARIABLE, p);
     ASSERT(buf.eof());
+
+    if (lineWidth != 1) {
+        polygon(polyId).setLineWidth(lineWidth);
+    }
 }
 
 void TraCICommandInterface::Polygon::remove(int32_t layer)

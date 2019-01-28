@@ -329,7 +329,7 @@ public:
 
     // Polygon methods
     std::list<std::string> getPolygonIds();
-    void addPolygon(std::string polyId, std::string polyType, const TraCIColor& color, bool filled, int32_t layer, const std::list<Coord>& points);
+    void addPolygon(std::string polyId, std::string polyType, const TraCIColor& color, bool filled, int32_t layer, const std::list<Coord>& points, double lineWidth=1);
     class Polygon {
     public:
         Polygon(TraCICommandInterface* traci, std::string polyId)
