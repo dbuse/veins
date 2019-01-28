@@ -342,6 +342,7 @@ public:
         std::string getTypeId();
         std::list<Coord> getShape();
         void setShape(const std::list<Coord>& points);
+        void setLineWidth(double lineWidth);
         void remove(int32_t layer);
 
     protected:

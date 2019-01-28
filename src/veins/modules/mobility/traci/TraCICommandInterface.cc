@@ -648,6 +648,18 @@ void TraCICommandInterface::Polygon::setShape(const std::list<Coord>& points)
     ASSERT(obuf.eof());
 }
 
+void TraCICommandInterface::Polygon::setLineWidth(double lineWidth)
+{
+    TraCIBuffer b;
+    b << static_cast<uint8_t>(VAR_WIDTH);
+    b << polyId;
+    b << static_cast<uint8_t>(TYPE_DOUBLE);
+    b << lineWidth;
+
+    TraCIBuffer buf = connection->query(CMD_SET_POLYGON_VARIABLE, b);
+    ASSERT(buf.eof());
+}
+
 void TraCICommandInterface::addPolygon(std::string polyId, std::string polyType, const TraCIColor& color, bool filled, int32_t layer, const std::list<Coord>& points)
 {
     TraCIBuffer p;
