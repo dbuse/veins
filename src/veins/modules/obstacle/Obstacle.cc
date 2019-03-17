@@ -53,12 +53,12 @@ const Obstacle::Coords& Obstacle::getShape() const
     return coords;
 }
 
-const Coord Obstacle::getBboxP1() const
+const Coord& Obstacle::getBboxP1() const
 {
     return bboxP1;
 }
 
-const Coord Obstacle::getBboxP2() const
+const Coord& Obstacle::getBboxP2() const
 {
     return bboxP2;
 }
