@@ -8,3 +8,5 @@ ifeq ($(PLATFORM),win32.x86_64)
   ENABLE_AUTO_IMPORT=-Wl,--enable-auto-import
   LDFLAGS := $(filter-out $(ENABLE_AUTO_IMPORT), $(LDFLAGS))
 endif
+
+CXXFLAGS += -fno-omit-frame-pointer
