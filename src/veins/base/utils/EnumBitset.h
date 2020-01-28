@@ -45,7 +45,7 @@ struct VEINS_API EnumTraits;
  * enum as the type for the bitset.
  * Allows implementation of typesafe sets.
  */
-template <typename T>
+template <typename T, typename = typename std::enable_if<std::is_class<EnumTraits<T>>::value>::type >
 class VEINS_API EnumBitset {
 private:
     using EnumUnderlyingType = typename std::underlying_type<T>::type;
@@ -136,7 +136,7 @@ public:
     }
 };
 
-template <typename T>
+template <typename T, typename = typename std::enable_if<std::is_class<EnumTraits<T>>::value>::type >
 EnumBitset<T> operator|(T lhs, T rhs)
 {
     return EnumBitset<T>(lhs) | EnumBitset<T>(rhs);
