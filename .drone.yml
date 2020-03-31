@@ -1,0 +1,51 @@
+---
+kind: pipeline
+type: docker
+name: veins build and test
+
+# TODO: use better docker images
+# TODO: support multiple dependency versions
+
+services:
+  - name: sumo
+    image: dbuse/sumo-python:3.8-buster-1_1_0
+    commands:
+      - wget -O/tmp/sumo-launchd.py https://raw.githubusercontent.com/sommer/veins/master/sumo-launchd.py
+      - python3 /tmp/sumo-launchd.py -v -p 9999 --bind 0.0.0.0
+
+steps:
+  - name: build veins
+    image: omnetpp/travis-base:5.4.1-180629
+    commands:
+      - ./configure
+      - make -j$(nproc) MODE=debug
+
+  - name: catch tests
+    image: omnetpp/travis-base:5.4.1-180629
+    commands:
+      - cd subprojects/veins_catch/
+      - ./configure
+      - make -j$(nproc) MODE=debug
+      - ./run -d
+
+  - name: example
+    image: omnetpp/travis-base:5.4.1-180629
+    commands:
+      - cd examples/veins
+      - sed -i 's/localhost/sumo/' omnetpp.ini
+      - cat omnetpp.ini
+      - ln -s /usr/bin/python3 /usr/bin/python  # FIXME: use proper python version
+      - ./run -d -- -uCmdenv --sim-time-limit=1000s
+
+  - name: testsims
+    image: omnetpp/travis-base:5.4.1-180629
+    commands:
+      - cd subprojects/veins_testsims
+      - ./configure
+      - make -j$(nproc) MODE=debug
+      - cd sim/veins_testsims/traci/
+      - sed -i 's/localhost/sumo/' omnetpp.ini
+      - cat omnetpp.ini
+      - ln -s /usr/bin/python3 /usr/bin/python  # FIXME: use proper python version
+      - ./runall
+...
